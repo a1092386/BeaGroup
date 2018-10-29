@@ -22,6 +22,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,12 +37,17 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class account extends AppCompatActivity {
+    //Erika 2018.10.15試圖關閉不使用之Activity
+    public static account instance = null;
+
     private static final Pattern PASSWORD_PATTERN =
             Pattern.compile("^"            //String 開頭
                     + "(?=.*[0-9])"       //至少一數字
@@ -52,20 +60,10 @@ public class account extends AppCompatActivity {
     ListView listView;
     //ImageView imageView;
     CircleImageView circleImageView;
-    TextView textView;
+    TextView textView, tokenTest;
     Button logout;
     String gender = "";
-
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_logout, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
-    }*/
+    FirebaseFirestore mFirestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,33 +74,39 @@ public class account extends AppCompatActivity {
         //imageView = (ImageView)findViewById(R.id.sex_pic);
         circleImageView = (CircleImageView)findViewById(R.id.searchImage);
         textView = (TextView)findViewById(R.id.account_name);
+        tokenTest = (TextView)findViewById(R.id.token);
+        //tokenTest.setText(GlobalVariable.token);
         logout = (Button)findViewById(R.id.logout_btn);
+        mFirestore = FirebaseFirestore.getInstance();
         getJSON("http://140.113.73.42/account.php");
+
+        //Erika 2018.10.15關閉activity
+        instance = this;
 
 
     }
 
-    /*public void showPopup(View view) {
-        PopupMenu popup = new PopupMenu(this, view);
-        MenuInflater inflater = popup.getMenuInflater();
-        inflater.inflate(R.menu.menu_logout, popup.getMenu());
-        popup.show();
-
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                SaveSharedPreference.clear(account.this);
-                Intent intent = new Intent(getApplicationContext(), login.class);
-                startActivity(intent);
-                return true;
-            }
-        });
-    }*/
 
     public void logout(View view){
+        //Erika 2018.10.18 SET Group_ID & Block default value (unknown & null) while logout
+        String userID = SaveSharedPreference.getID(this);
+        uploadLocation uploadLoc = new uploadLocation();
+        assignGroupID assignGID = new assignGroupID();
+        uploadLoc.execute(userID, "unknown");
+        assignGID.execute(userID, "NULL");
+        Map<String, Object> tokenMapRemove = new HashMap<>();
+        tokenMapRemove.put("tokenID", "");
+
+        mFirestore.collection("Users").document(userID).update(tokenMapRemove);
+
         SaveSharedPreference.clear(account.this);
         Intent intent = new Intent(getApplicationContext(), login.class);
         startActivity(intent);
+
+
+        //Erika 2018.10.15試圖關閉不使用之Activity
+        account.instance.finish();
+
     }
 
 

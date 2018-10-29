@@ -1,16 +1,38 @@
 package com.example.sharon.beagroup;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.api.Context;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -21,16 +43,28 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import javax.annotation.Nullable;
+
 import de.hdodenhof.circleimageview.CircleImageView;
+import static com.estimote.coresdk.common.config.EstimoteSDK.getApplicationContext;
+
 
 
 public class lockFriend extends AppCompatActivity{
 
     EditText searchID;
-    TextView textView;
+    TextView textView, textView2;
     String[] UserInfo = new String[3];
     String result="";
     CircleImageView circleImageView;
+    String group_id;
+    Button buttonLock;
+    String friendCheckCode;
+    Button button;
+    private String uid;
+    private FirebaseFirestore mFirestore;
+    private DocumentReference documentReference;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,26 +74,69 @@ public class lockFriend extends AppCompatActivity{
         searchID = (EditText) findViewById(R.id.searchText);
         textView = (TextView)findViewById(R.id.searchName);
         circleImageView = (CircleImageView)findViewById(R.id.searchImage);
+        textView2 = (TextView)findViewById(R.id.id);
+        mFirestore = FirebaseFirestore.getInstance();
+
+        group_id = SaveSharedPreference.getGroup_ID(this);
+        buttonLock = (Button)findViewById(R.id.button_lock);
+
+        buttonLock.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String findID = searchID.getText().toString();
+                PushNotification pushNotification = new PushNotification(lockFriend.this);
+                pushNotification.onPush(findID);
+            }
+        });
+
+        String dataFrom = getIntent().getStringExtra("from_user_id");
+        /*if(!dataFrom.equals("")){
+            AlertDialog.Builder alertDialogBuilder =
+                    new AlertDialog.Builder(this)
+                            .setTitle("確認邀請")
+                            .setMessage("是否同意邀請")
+                            .setPositiveButton("同意", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            })
+                            .setNegativeButton("拒絕", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+
+            // Show the AlertDialog.
+            AlertDialog alertDialog = alertDialogBuilder.show();
+        }*/
 
     }
 
     public void openJSON(View view){
+
         getJSON("http://140.113.73.42/search.php");
     }
 
 
     public void getJSON(final String urlWebService){
+        MyApplication myApplication = (MyApplication) getApplicationContext();
         class  GetJSON extends AsyncTask<Void, Void, String>{
 
             //SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(account.this);
             //String currentUser = preferences.getString("USER", "null");
             String IDText = searchID.getText().toString();
 
+            //checkFriendID checkFID = new checkFriendID();
+            //MyApplication myApplication = (MyApplication) getApplicationContext();
+
 
 
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
+                String IDText = searchID.getText().toString();
+                checkFriendID checkFID = new checkFriendID();
+                checkFID.execute(group_id, IDText);
             }
 
             @Override
@@ -68,10 +145,27 @@ public class lockFriend extends AppCompatActivity{
                 try {
 
                     loadIntoView(s);
+                    //checkFID.execute(group_id, IDText);
+                    Log.d("lockFriend.java","checkFID.execute()");
+                    //String isFriend = myApplication.getFriendCheck();
+                    String isFriend = SaveSharedPreference.getFriendCheckCode(getApplicationContext());
+                    if (isFriend != ""){
+                        if (isFriend == "1"){
+                            Log.d("lockFriend", IDText + " is already a friend.");
+                        }else{
+                            Log.d("lockFriend", IDText + " is not a friend.");
+                        }
+                    }else{
+                        Log.d("lockFriend", "friendCheck is null");
+                    }
+                    //myApplication.setFriendCheck("");
+                    SaveSharedPreference.setFriendCheckCode(lockFriend.this, "");
+                    Log.d("lockFriend", "after friendCheck, setting FriendCheckCode to default value: "+ SaveSharedPreference.getFriendCheckCode(lockFriend.this));
 
                 }catch (JSONException e){
                     //e.printStackTrace();
                     textView.setText("ID錯誤");
+                    buttonLock.setVisibility(View.INVISIBLE);
                     //Toast.makeText(getApplicationContext(), "ID錯誤", Toast.LENGTH_SHORT).show();
                 }
 
@@ -119,6 +213,10 @@ public class lockFriend extends AppCompatActivity{
 
     //將JSON的值存入array
     private void loadIntoView(String json) throws JSONException{
+        Log.d("lockFriend", "loadIntoView");
+
+        //buttonLock.setVisibility(View.VISIBLE);
+        showFollowingButton();
         String gender = "";
         if(!json.equals("")) {
             JSONArray jsonArray = new JSONArray(json);
@@ -144,6 +242,28 @@ public class lockFriend extends AppCompatActivity{
         /*if(!result.equals("error")){
             textView.setText("HIhi"+UserInfo[0]);
         }*/
+    }
+    public void showFollowingButton(){
+        //Erika 2018.10.19 追蹤按鈕(目前無邀請功能，直接追蹤)，文字可視整合過任意修改。
+        friendCheckCode = SaveSharedPreference.getFriendCheckCode(getApplicationContext());
+        if (friendCheckCode == "1"){
+            buttonLock.setVisibility(View.VISIBLE);
+            buttonLock.setText(R.string.following);//已追蹤
+            buttonLock.setClickable(false);//希望可以做到按鈕便灰色的，比較好辨識
+        }else{
+            buttonLock.setVisibility(View.VISIBLE);
+            buttonLock.setText(getString(R.string.follow));//開始追蹤
+            buttonLock.setClickable(true);
+        }
+    }
+
+    public void lockFriend(View view){
+        String IDText = searchID.getText().toString();
+        InsertFriendList insertFriendList = new InsertFriendList();
+        insertFriendList.execute(group_id, IDText);
+        buttonLock.setVisibility(View.VISIBLE);
+        buttonLock.setText(R.string.following);//已追蹤
+        buttonLock.setClickable(false);//希望可以做到按鈕便灰色的，比較好辨識
     }
 }
 

@@ -2,6 +2,7 @@ package com.example.sharon.beagroup;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,6 +17,14 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import org.json.JSONException;
 
 import java.io.BufferedReader;
@@ -29,6 +38,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
@@ -49,6 +60,10 @@ public class signup extends AppCompatActivity{
     EditText name, password, password_con, email, id;
     Switch sex;
     TextInputLayout namelayout, passwordconlayout, passwordlayout, emaillayout, idlayout;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseFirestore mFirestore;
+    private static final String TAG = "signupActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +81,9 @@ public class signup extends AppCompatActivity{
         passwordconlayout = (TextInputLayout)findViewById(R.id.et_password_con_layout);
         emaillayout = (TextInputLayout)findViewById(R.id.et_email_layout);
         idlayout = (TextInputLayout)findViewById(R.id.et_id_layout);
+        mAuth = FirebaseAuth.getInstance();
+        mFirestore = FirebaseFirestore.getInstance();
+
     }
 
     private boolean validateUsername(){
@@ -151,11 +169,38 @@ public class signup extends AppCompatActivity{
             return;
         }
         else{
+            String user_name = name.getText().toString();
+            String user_id = id.getText().toString();
+            String user_pass = password.getText().toString();
+            String user_mail = user_id+"@beagrouop.com";
+            mAuth.createUserWithEmailAndPassword(user_mail, user_pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    //progressBar.setVisibility(View.GONE);
+                    if (task.isSuccessful()) {
+                        String uid = mAuth.getCurrentUser().getUid();
+                        Map<String, Object> userMap = new HashMap<>();
+                        userMap.put("name", user_name);
+                        userMap.put("uid",uid);
+                        mFirestore.collection("Users").document(user_id).set(userMap);
+                        /*finish();
+                        startActivity(new Intent(signup.this, login.class));*/
+                    } else {
+
+                        if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                            Toast.makeText(getApplicationContext(), "You are already registered", Toast.LENGTH_SHORT).show();
+
+                        } else {
+                            Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                }
+            });
+
             onSignup(getWindow().getDecorView());
         }
     }
-
-
 
     public void onSignup(View view) {
         String str_name = name.getText().toString();
@@ -173,6 +218,8 @@ public class signup extends AppCompatActivity{
         BackgroundWork backgroundWork = new BackgroundWork(this);
         backgroundWork.execute(type, str_name, str_password, str_email, str_id, str_sex); //傳參數(型態：註冊、註冊內容)
         if (backgroundWork.login_code.equals("1")) { //若註冊成功，跳轉至主畫面
+
+
             Intent intent = new Intent();
             intent.setClass(signup.this, MainActivity.class);
             startActivity(intent);

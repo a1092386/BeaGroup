@@ -5,9 +5,10 @@ import android.app.Application;
 import com.estimote.coresdk.recognition.packets.Beacon;
 
 public class GlobalVariable extends Application {
-    public Beacon B1;//Lemon
-    public Beacon B2;//Candy
-    public Beacon B3;//Beetroot
-    public String userLocation; //user's location
-    public String id;
+    //public Beacon B1;//Lemon
+    //public Beacon B2;//Candy
+    //public Beacon B3;//Beetroot
+    //public String userLocation; //user's location
+    //public String id;
+    //public static String token;
 }

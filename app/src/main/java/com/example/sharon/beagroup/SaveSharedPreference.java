@@ -32,8 +32,42 @@ public class SaveSharedPreference {
         return getSharedPreferences(ctx).getBoolean("logged", false);
     }
 
+    public static void setToken(Context ctx, String token)
+    {
+        SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
+        editor.putString("token", token).apply();
+    }
+
+    public static String getToken(Context ctx)
+    {
+        return getSharedPreferences(ctx).getString("token", "null");
+    }
+
     public static void clear(Context ctx){
         SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
         editor.clear().commit();
+    }
+
+    //Erika 20181018 每次都入給予一個Unique的group_ID
+    /**Set Group_ID**/
+
+    public static void setGroup_ID(Context ctx, String group_ID){
+        SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
+        editor.putString("Group_ID", group_ID).apply();
+    }
+
+    public static String getGroup_ID(Context ctx){
+        return getSharedPreferences(ctx).getString("Group_ID","null");
+    }
+
+    /**Set friendCheckCode**/
+
+    public static void setFriendCheckCode(Context ctx, String friendCheckCode){
+        SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
+        editor.putString("FriendCheckCode", friendCheckCode).apply();
+    }
+
+    public static String getFriendCheckCode(Context ctx){
+        return getSharedPreferences(ctx).getString("FriendCheckCode","null");
     }
 }

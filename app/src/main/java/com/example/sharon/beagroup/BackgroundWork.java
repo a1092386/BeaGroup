@@ -7,7 +7,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.util.Log;
 import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -20,6 +31,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 import static android.support.v4.content.ContextCompat.startActivity;
 
@@ -29,6 +42,9 @@ public class BackgroundWork extends AsyncTask<String, Void, String>{ //背景執
     String login_code="";
     String signup_code="";
     SharedPreferences preferences;
+    FirebaseFirestore mFirestore;
+    FirebaseAuth mAuth;
+    MyFirebaseMessagingService FMS;
     BackgroundWork(Context ctx){
         context = ctx;
     }
@@ -60,8 +76,11 @@ public class BackgroundWork extends AsyncTask<String, Void, String>{ //背景執
                 String result = "";
 
                 while((login_code = bufferedReader.readLine()) != null){ //從緩衝區讀取數據
-                    if(login_code.equals("1")) //資料正確
-                        result+="Login success";
+                    if(login_code.equals("1")) { //資料正確
+
+                        result += "Login success";
+
+                    }
                     else if(login_code.equals("0"))  //資料錯誤
                         result+="Login failed";
 
@@ -111,13 +130,20 @@ public class BackgroundWork extends AsyncTask<String, Void, String>{ //背景執
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
                 String result = "";
 
+                uploadLocation upload = new uploadLocation();
+                assignGroupID assignGID = new assignGroupID();
+
                 while((signup_code = bufferedReader.readLine()) != null){
-                    if(signup_code.equals("1")) //資料正確
-                        result+="Signup  success";
+                    if(signup_code.equals("1")) { //資料正確
+
+                        //Erika 2018.10.18 first sign up upload default usrLocation: unknown
+                        //Log.d("backgroundWork.java","upload.execute(id, unknown)");
+                        upload.execute(id, "unknown");
+                        assignGID.execute(id, "NULL");
+                        result += "Signup  success";
+                    }
                     else  //資料錯誤
                         result+="signup  failed";
-
-                    //result += line;
                 }
                 bufferedReader.close();
                 inputStream.close();
@@ -160,11 +186,57 @@ public class BackgroundWork extends AsyncTask<String, Void, String>{ //背景執
     protected void onPostExecute(String result) {
         //super.onPostExecute(aVoid);
 
-        Toast.makeText(context, result, Toast.LENGTH_LONG).show(); //以Toast顯示結果(登入成功/失敗、註冊成功/失敗)
+        //Toast.makeText(context, result, Toast.LENGTH_LONG).show(); //以Toast顯示結果(登入成功/失敗、註冊成功/失敗)
         if(result.equals("Login success")) { //若登入成功則結束此context
+
+            mFirestore = FirebaseFirestore.getInstance();
+            mAuth = FirebaseAuth.getInstance();
+            FMS = new MyFirebaseMessagingService(context);
+            String user_id = SaveSharedPreference.getID(context);
             SaveSharedPreference.setLog(context, true);
-            ((Activity) context).finish();
-        }
+            FirebaseInstanceId.getInstance().getInstanceId();
+            //String tokenID = FMS.getToken(context);
+            FirebaseInstanceId.getInstance().getInstanceId()
+                    .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                            if (!task.isSuccessful()) {
+                                Log.w("Background", "getInstanceId failed", task.getException());
+                                return;
+                            }
+
+                            // Get new Instance ID token
+                            String token = task.getResult().getToken();
+                            Log.w("Background", "取得token  "+token+" 讚讚");
+                            Map<String, Object> tokenMap = new HashMap<>();
+                            tokenMap.put("tokenID", token);
+                            mFirestore.collection("Users").document(user_id).update(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.w("放上雲端", "取得token  "+token+"讚讚");
+                                    ((Activity) context).finish();
+                                }
+                            });
+                            //SaveSharedPreference.setToken(context, token);
+                        }
+                    });
+
+
+
+                    //String tokenID = SaveSharedPreference.getToken(context);
+                    //Map<String, Object> tokenMap = new HashMap<>();
+                    //tokenMap.put("tokenID", tokenID);
+            //Log.w("Backgroundwork", "取得token  "+tokenID+"讚讚");
+                    /*mFirestore.collection("Users").document(user_id).update(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            ((Activity) context).finish();
+                        }
+                    });*/
+                }
+
+            //((Activity) context).finish();
+
         if(result.equals("Signup  success")) { //若註冊成功則結束此context
             ((Activity) context).finish();
         }
