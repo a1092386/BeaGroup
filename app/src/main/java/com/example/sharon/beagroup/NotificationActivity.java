@@ -24,6 +24,8 @@ public class NotificationActivity extends AppCompatActivity {
 
         String dataMessage = getIntent().getStringExtra("message");
         String dataFrom = getIntent().getStringExtra("from_user_id");
+        String groupID = getIntent().getStringExtra("from_group_id");
+        String user_id = SaveSharedPreference.getID(this);
 
         //mNotiData = (TextView)findViewById(R.id.noti_text);
         //mNotiData.setText(" FROM : " + dataFrom + " | MESSAGE : " + dataMessage);
@@ -36,9 +38,14 @@ public class NotificationActivity extends AppCompatActivity {
                         .setPositiveButton("同意", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
+                                AddFriend addFriend = new AddFriend(NotificationActivity.this);
+                                addFriend.execute(groupID, user_id);
+                                PushNotification pushNotification = new PushNotification(NotificationActivity.this);
+                                pushNotification.onPushBack(dataFrom);
                                 Intent intent = new Intent(NotificationActivity.this, lockFriend.class);
                                 startActivity(intent);
                                 NotificationActivity.this.finish();
+
 
                             }
                         })

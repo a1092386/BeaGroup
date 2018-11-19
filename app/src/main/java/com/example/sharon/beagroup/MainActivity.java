@@ -1,8 +1,13 @@
 package com.example.sharon.beagroup;
 
+import android.bluetooth.BluetoothAdapter;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,11 +15,15 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.estimote.coresdk.common.requirements.SystemRequirementsChecker;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,6 +32,9 @@ public class MainActivity extends AppCompatActivity {
     public static MainActivity instance = null;
     public static String userID;
     public static String groupID;
+    boolean isBluetoothSupported;
+    FirebaseFirestore mFirestore;
+
 
 
     @Override
@@ -32,6 +44,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            isBluetoothSupported = false;
+        } else {
+            isBluetoothSupported = true;
+
+        }
+
 
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
@@ -40,7 +60,9 @@ public class MainActivity extends AppCompatActivity {
         instance = this;
         /**Erika 2018.10.16 Start Background Scanning Service**/
         /**Erika 2018.10.18 Recode Background Scanning service a class method**/
-        startScanningService();
+
+        if(isBluetoothSupported)
+            startScanningService();
 
         if(!SaveSharedPreference.getLog(MainActivity.this))
         {
@@ -75,13 +97,14 @@ public class MainActivity extends AppCompatActivity {
     protected  void onResume(){
         super.onResume();
         SystemRequirementsChecker.checkWithDefaultDialogs(this);
+
     }
 
     @Override
     protected void onRestart(){
         super.onRestart();
-
-        startScanningService();
+        if(isBluetoothSupported)
+            startScanningService();
 
         userID = SaveSharedPreference.getID(this);
         groupID = SaveSharedPreference.getGroup_ID(this);
@@ -92,9 +115,16 @@ public class MainActivity extends AppCompatActivity {
                 //產生Group_ID token (隨機)
                 groupID = groupIDGenerator();
                 SaveSharedPreference.setGroup_ID(MainActivity.this, groupID);
+                mFirestore = FirebaseFirestore.getInstance();
+                String user_id = SaveSharedPreference.getID(MainActivity.this);
+
                 Log.d("group_id","give "+ userID+" a Group_ID - "+ SaveSharedPreference.getGroup_ID(this));
                 assignGroupID assignGID = new assignGroupID();
                 assignGID.execute(userID, groupID);
+                //sharon傳group_id上firebase
+                Map<String, Object> tokenMap = new HashMap<>();
+                tokenMap.put("groupID", groupID);
+                mFirestore.collection("Users").document(user_id).update(tokenMap);
             }else{
                 Log.d("group_id",userID+" already has a Group_ID - "+ groupID);
             }
@@ -143,4 +173,5 @@ public class MainActivity extends AppCompatActivity {
 
         return token;
     }
+
 }

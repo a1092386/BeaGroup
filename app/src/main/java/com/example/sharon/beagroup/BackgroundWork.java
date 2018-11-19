@@ -12,6 +12,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -190,11 +191,11 @@ public class BackgroundWork extends AsyncTask<String, Void, String>{ //背景執
         if(result.equals("Login success")) { //若登入成功則結束此context
 
             mFirestore = FirebaseFirestore.getInstance();
-            mAuth = FirebaseAuth.getInstance();
+            //mAuth = FirebaseAuth.getInstance();
             FMS = new MyFirebaseMessagingService(context);
             String user_id = SaveSharedPreference.getID(context);
             SaveSharedPreference.setLog(context, true);
-            FirebaseInstanceId.getInstance().getInstanceId();
+            //FirebaseInstanceId.getInstance().getInstanceId();
             //String tokenID = FMS.getToken(context);
             FirebaseInstanceId.getInstance().getInstanceId()
                     .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
@@ -213,9 +214,23 @@ public class BackgroundWork extends AsyncTask<String, Void, String>{ //背景執
                             mFirestore.collection("Users").document(user_id).update(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    Log.w("放上雲端", "取得token  "+token+"讚讚");
+                                    Log.w("放上雲端", "取得token  " + token + "讚讚");
+                                    Intent intent = new Intent();
+                                    intent.setClass(context, MainActivity.class);
                                     ((Activity) context).finish();
                                 }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.w("失敗", "無法firebase");
+                                }
+
+
+
+
+
+
                             });
                             //SaveSharedPreference.setToken(context, token);
                         }

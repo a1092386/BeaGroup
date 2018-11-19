@@ -64,61 +64,9 @@ public class login extends AppCompatActivity {
             Log.d("login.onCreate()", "service [periodicallyUploadService] isn't running");
         }
 
-        /*mAuthListener = new FirebaseAuth.AuthStateListener(){
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if(user!=null){
-                    //User is signed in
-                    Log.d(TAG, "onAuthStateChanged : signed_in: " + user.getUid());
-                    //toastMessage("成功登入"+user.getEmail());
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    //intent.setClass(login.this, MainActivity.class);
-                    startActivity(intent);
-
-                }
-                else {
-                    //User is signed out
-                    Log.d(TAG, "onAuthStateChanged : signed_out");
-                    toastMessage("成功登出");
-                }
-            }
-        };*/
-        /*btn_login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String id = edUserid.getText().toString();
-                String pass = edUserpwd.getText().toString();
-                String email = id+"@beagroup.com";
-                if(!id.equals("") && !pass.equals("")){
-                    mAuth.signInWithEmailAndPassword(email, pass);
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(intent);
-                }
-                else{
-                    toastMessage("沒有填入資料");
-                }
-            }
-        });*/
-
-
-
 
     }
-    /*@Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        mAuth.addAuthStateListener(mAuthListener);
-    }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if(mAuthListener != null){
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
-    }*/
 
     public void onLogin(View view) throws ExecutionException, InterruptedException{
 
@@ -128,30 +76,6 @@ public class login extends AppCompatActivity {
         String type = "login";
         BackgroundWork backgroundWork = new BackgroundWork(this);
         String result = backgroundWork.execute(type, userid,password).get(); //傳參數(型態：登入、登入內容)
-       /*if(result.equals("Signup  success")){ //若登入成功，跳轉至主畫面
-
-           mAuth.getCurrentUser().getIdToken(true).addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
-               @Override
-               public void onSuccess(GetTokenResult getTokenResult) {
-                   String tokenID = getTokenResult.getToken();
-                   String currentID = mAuth.getCurrentUser().getUid();
-
-                   Map<String, Object> tokenMap = new HashMap<>();
-                   tokenMap.put("tokenId", tokenID);
-                   mFirestore.collection("Users").document(userid).update(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
-                       @Override
-                       public void onSuccess(Void aVoid) {
-                           Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                           //intent.setClass(login.this, MainActivity.class);
-                           startActivity(intent);
-                       }
-                   });
-               }
-           });
-           Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-           //intent.setClass(login.this, MainActivity.class);
-           startActivity(intent);
-        }*/
 
     }
 

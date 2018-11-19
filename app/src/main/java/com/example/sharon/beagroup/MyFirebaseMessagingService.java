@@ -59,6 +59,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService{
             SaveSharedPreference.setToken(context, mToken);
     }
 
+    //當APP在foreground時自動呼叫
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
@@ -68,20 +69,31 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService{
         String messageTitle = remoteMessage.getNotification().getTitle();
         String messageBody = remoteMessage.getNotification().getBody();
         String click_action = remoteMessage.getNotification().getClickAction();
+        String flag = remoteMessage.getData().get("flag");
         String dataMessage = remoteMessage.getData().get("message");
         String dataFrom = remoteMessage.getData().get("from_user_id");
+        String groupID = remoteMessage.getData().get("from_group_id");
 
         String channelId = "Default";
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this, channelId)
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle(messageTitle)
-                        .setContentText(messageBody);
+                        .setContentText(messageBody)
+                        .setAutoCancel(true);
+        if(flag.equals("2")){
+            Log.d(TAG, "進入if");
+            click_action = ".FindFriends";
+        }
 
         //Intent resultIntent = new Intent(this, NotificationActivity.class);
+
         Intent resultIntent = new Intent(click_action);
         resultIntent.putExtra("message", dataMessage);
         resultIntent.putExtra("from_user_id", dataFrom);
+        resultIntent.putExtra("from_group_id", groupID);
+
+
 
 
         // Because clicking the notification opens a new ("special") activity, there's no need to create an artificial back stack.

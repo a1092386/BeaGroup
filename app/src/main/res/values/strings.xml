@@ -53,6 +53,7 @@
     <string name="default_notification_channel_name">default</string>
     <string name="follow">開始追蹤</string>
     <string name="following">已追蹤</string>
+    <string name="searchingID">搜尋ID</string>
 
 
 </resources>

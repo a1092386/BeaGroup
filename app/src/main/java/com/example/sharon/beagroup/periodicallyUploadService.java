@@ -31,8 +31,8 @@ public class periodicallyUploadService extends Service {
     private BeaconManager beaconManager;
     private BeaconRegion region;
     private Beacon minBeacon;
-    private String myLocation;
-    private String lastLocation;
+    private String myLocation="";
+    private String lastLocation="";
 
     /**NOT SUPPORT API**/
     public static final String TAG = "periodicallyUploadService.service";
@@ -75,7 +75,7 @@ public class periodicallyUploadService extends Service {
     public void onCreate(){
         super.onCreate();
         Log.d(TAG, "onCreate() executed");
-        lastLocation = "startAPP";
+        //lastLocation = "startAPP";
         scanning();
 
     }

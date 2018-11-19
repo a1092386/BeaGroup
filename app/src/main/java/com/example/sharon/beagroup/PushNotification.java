@@ -33,6 +33,7 @@ public class PushNotification {
             Map<String, Object> notificationMessage = new HashMap<>();
             notificationMessage.put("message", message);
             notificationMessage.put("from", currentID);
+            notificationMessage.put("flag" ,"1");
 
             mFirestore.collection("Users/" +findID + "/Notifications").add(notificationMessage).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                 @Override
@@ -46,6 +47,33 @@ public class PushNotification {
                     Toast.makeText(context, "通知未送出", Toast.LENGTH_SHORT).show();
                 }
             });
+        }
+
+    }
+
+    public void onPushBack(String fromID){
+        mFirestore = FirebaseFirestore.getInstance();
+        String uid= FirebaseAuth.getInstance().getUid();
+        currentID = SaveSharedPreference.getID(context);
+        String message = currentID+"已成為您的好友";
+        if(!TextUtils.isEmpty(message)){
+            Map<String, Object> notificationMessage = new HashMap<>();
+            notificationMessage.put("message", message);
+            notificationMessage.put("from", currentID);
+            notificationMessage.put("flag" ,"2");
+
+            mFirestore.collection("Users/" + fromID + "/Notifications").add(notificationMessage).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                @Override
+                public void onSuccess(DocumentReference documentReference) {
+                    Toast.makeText(context, "通知送出!!!!!!!!", Toast.LENGTH_SHORT).show();
+                }
+            })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(context, "通知未送出", Toast.LENGTH_SHORT).show();
+                        }
+                    });
         }
 
     }

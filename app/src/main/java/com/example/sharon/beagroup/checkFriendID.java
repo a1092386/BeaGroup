@@ -1,5 +1,6 @@
 package com.example.sharon.beagroup;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -20,6 +21,8 @@ import static com.estimote.coresdk.common.config.EstimoteSDK.getApplicationConte
 
 public class checkFriendID extends AsyncTask<String, Void, String> {
 
+    Context context;
+    checkFriendID (Context ctx){context = ctx;}
     //MyApplication myApplication = (MyApplication) getApplicationContext();
 
     @Override
@@ -59,20 +62,26 @@ public class checkFriendID extends AsyncTask<String, Void, String> {
             //myApplication.setFriendCheck("");
 
             //SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            SaveSharedPreference.setFriendCheckCode(getApplicationContext(), "");
+            Log.d("測試", "到setFriendCheckCode上"+group_id+" "+friend_id);
+            SaveSharedPreference.setFriendCheckCode(context, "");
+            Log.d("測試", "到setFriendCheckCode下");
 
             while ((check_code = bufferedReader.readLine()) != null) {
+                Log.d("測試", "到while中");
 
 
                 if (check_code.equals("1")) { //already a friend
+                    Log.d("測試", "到if中");
 
-                    SaveSharedPreference.setFriendCheckCode(getApplicationContext(), "1");
+                    SaveSharedPreference.setFriendCheckCode(context, "1");
                     Log.d("checkFriendID", friend_id + " is already a friend.");
                     result = "1";
                     return result;
                 } else {  //not a friend
 
-                    SaveSharedPreference.setFriendCheckCode(getApplicationContext(), "0");
+                    SaveSharedPreference.setFriendCheckCode(context, "0");
+                    Log.d("測試", "到else中");
+
                     result = "0";
                 }
             }
