@@ -96,6 +96,7 @@ public class account extends AppCompatActivity {
         assignGID.execute(userID, "NULL");
         Map<String, Object> tokenMapRemove = new HashMap<>();
         tokenMapRemove.put("tokenID", "");
+        tokenMapRemove.put("uid","");
 
         mFirestore.collection("Users").document(userID).update(tokenMapRemove);
 

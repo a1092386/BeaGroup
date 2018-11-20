@@ -3,6 +3,7 @@ package com.example.sharon.beagroup;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -26,9 +27,12 @@ public class PushNotification {
 
     public void onPush(String findID){
         mFirestore = FirebaseFirestore.getInstance();
-        String uid= FirebaseAuth.getInstance().getUid();
+        //String uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
+        //String id = SaveSharedPreference.getID(context);
+        String name = SaveSharedPreference.getName(context);
+        //Log.w("測試通知",uid);
         currentID = SaveSharedPreference.getID(context);
-        String message = "send from "+uid;
+        String message = " 傳送了邀請給您";
         if(!TextUtils.isEmpty(message)){
             Map<String, Object> notificationMessage = new HashMap<>();
             notificationMessage.put("message", message);
@@ -55,7 +59,8 @@ public class PushNotification {
         mFirestore = FirebaseFirestore.getInstance();
         String uid= FirebaseAuth.getInstance().getUid();
         currentID = SaveSharedPreference.getID(context);
-        String message = currentID+"已成為您的好友";
+        String name = SaveSharedPreference.getName(context);
+        String message = " 已成為您的好友";
         if(!TextUtils.isEmpty(message)){
             Map<String, Object> notificationMessage = new HashMap<>();
             notificationMessage.put("message", message);

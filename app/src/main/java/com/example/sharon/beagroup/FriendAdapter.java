@@ -32,34 +32,28 @@ public class FriendAdapter extends BaseAdapter{
         this.ID = ID;
         this.Block = Block;
         //this.count = count;
-        Log.w("測試friend","到建構子");
         inflter = (LayoutInflater.from(applicationContext));
-        Log.w("測試friend","到inflter下");
 
 
     }
 
     @Override
     public int getCount() {
-        Log.w("測試friend","到getCount");
         return Name.length;
     }
 
     @Override
     public Object getItem(int position) {
-        Log.w("測試friend","到getItem");
         return null;
     }
 
     @Override
     public long getItemId(int position) {
-        Log.w("測試friend","到getItemID");
         return 0;
     }
 
     @Override
     public View getView(int i, View view, ViewGroup parent) {
-        Log.w("測試friend","到getView");
         view =inflter.inflate(R.layout.friend_list, null);
         photo = (ImageView) view.findViewById(R.id.photo);
         name = (TextView) view.findViewById(R.id.name);

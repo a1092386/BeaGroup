@@ -18,32 +18,27 @@ public class CustomAdapter extends BaseAdapter {
         this.context = applicationContext;
         this.Item = item;
         this.SubItem = subItem;
-        Log.w("測試account","到建構子");
         inflter = (LayoutInflater.from(applicationContext));
-        Log.w("測試","到inflter下");
+
     }
 
     @Override
     public int getCount() {
-        Log.w("測試account","到getCount");
         return Item.length;
     }
 
     @Override
     public Object getItem(int position) {
-        Log.w("測試account","到getItem");
         return null;
     }
 
     @Override
     public long getItemId(int position) {
-        Log.w("測試account","到getItemID");
         return 0;
     }
 
     @Override
     public View getView(int i, View view, ViewGroup parent) {
-        Log.w("測試account","到getView");
         view =inflter.inflate(R.layout.activity_account_item, null);
         TextView item = (TextView) view.findViewById(R.id.item);
         TextView subitem = (TextView) view.findViewById(R.id.subitem);

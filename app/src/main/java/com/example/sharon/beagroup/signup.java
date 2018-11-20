@@ -173,12 +173,13 @@ public class signup extends AppCompatActivity{
             String user_id = id.getText().toString();
             String user_pass = password.getText().toString();
             String user_mail = user_id+"@beagrouop.com";
+            SaveSharedPreference.setName(signup.this, user_name);
             mAuth.createUserWithEmailAndPassword(user_mail, user_pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     //progressBar.setVisibility(View.GONE);
                     if (task.isSuccessful()) {
-                        String uid = mAuth.getCurrentUser().getUid();
+                        String uid = mAuth.getInstance().getUid();
                         Map<String, Object> userMap = new HashMap<>();
                         userMap.put("name", user_name);
                         userMap.put("uid",uid);

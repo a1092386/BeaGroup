@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -72,18 +73,23 @@ public class BackgroundWork extends AsyncTask<String, Void, String>{ //背景執
                 bufferedWriter.flush(); //刷新該stream中的緩衝，將缓衝數據寫到目的文件中(login.php)
                 bufferedWriter.close(); //關閉stream
                 outputStream.close(); //關閉此outputStream並釋放與此stream有關的所有系統資源
+
                 InputStream inputStream = httpURLConnection.getInputStream(); //獲取subprocess的輸入流
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1")); //InputStreamReader為byte stream轉character，且轉成iso-8859-1；並放在緩衝區
                 String result = "";
 
                 while((login_code = bufferedReader.readLine()) != null){ //從緩衝區讀取數據
                     if(login_code.equals("1")) { //資料正確
-
+                        Log.w("測試firebase", "到login success"+"帳號："+user_id+"密碼："+password+"login_code:"+login_code);
+                        String user_mail = user_id+"@beagrouop.com";
+                        //mAuth.signInWithEmailAndPassword(user_mail, password);
                         result += "Login success";
 
                     }
-                    else if(login_code.equals("0"))  //資料錯誤
-                        result+="Login failed";
+                    else if(login_code.equals("0")) {  //資料錯誤
+                        Log.w("測試firebase", "到login failed" + "帳號：" + user_id + "密碼：" + password + "login_code:" + login_code);
+                        result += "Login failed";
+                    }
 
 
                 }
@@ -187,14 +193,17 @@ public class BackgroundWork extends AsyncTask<String, Void, String>{ //背景執
     protected void onPostExecute(String result) {
         //super.onPostExecute(aVoid);
 
+
         //Toast.makeText(context, result, Toast.LENGTH_LONG).show(); //以Toast顯示結果(登入成功/失敗、註冊成功/失敗)
         if(result.equals("Login success")) { //若登入成功則結束此context
 
             mFirestore = FirebaseFirestore.getInstance();
-            //mAuth = FirebaseAuth.getInstance();
+            mAuth = FirebaseAuth.getInstance();
             FMS = new MyFirebaseMessagingService(context);
+            FirebaseUser currentUser = mAuth.getCurrentUser();
             String user_id = SaveSharedPreference.getID(context);
             SaveSharedPreference.setLog(context, true);
+
             //FirebaseInstanceId.getInstance().getInstanceId();
             //String tokenID = FMS.getToken(context);
             FirebaseInstanceId.getInstance().getInstanceId()
@@ -207,10 +216,12 @@ public class BackgroundWork extends AsyncTask<String, Void, String>{ //背景執
                             }
 
                             // Get new Instance ID token
+                            String uid = mAuth.getUid();
                             String token = task.getResult().getToken();
-                            Log.w("Background", "取得token  "+token+" 讚讚");
+
                             Map<String, Object> tokenMap = new HashMap<>();
                             tokenMap.put("tokenID", token);
+                            tokenMap.put("uid",uid);
                             mFirestore.collection("Users").document(user_id).update(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
@@ -223,7 +234,7 @@ public class BackgroundWork extends AsyncTask<String, Void, String>{ //背景執
                             .addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-                                    Log.w("失敗", "無法firebase");
+
                                 }
 
 

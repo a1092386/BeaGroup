@@ -82,7 +82,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService{
                         .setContentText(messageBody)
                         .setAutoCancel(true);
         if(flag.equals("2")){
-            Log.d(TAG, "進入if");
             click_action = ".FindFriends";
         }
 

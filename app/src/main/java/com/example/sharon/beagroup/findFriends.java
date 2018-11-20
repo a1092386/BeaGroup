@@ -127,11 +127,7 @@ public class findFriends extends AppCompatActivity {
         FriendAdapter friendAdapter = new FriendAdapter(getApplicationContext(), Photo, Name, ID, Block);
         Log.w("測試friend","在findFriend");
         listView.setAdapter(friendAdapter);}
-        /*Log.w("測試friend","在setAdapter下"+Sex[0]);
-        Log.w("測試friend","在setAdapter下"+Photo[0]);
-        Log.w("測試friend","在setAdapter下"+Name[0]);
-        Log.w("測試friend","在setAdapter下"+ID[0]);
-        Log.w("測試friend","在setAdapter下"+Block[0]);*/
+
         //listView.setOnItemClickListener(onClickListView);
     }
 

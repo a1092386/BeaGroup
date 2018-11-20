@@ -29,7 +29,6 @@ public class NotificationActivity extends AppCompatActivity {
 
         //mNotiData = (TextView)findViewById(R.id.noti_text);
         //mNotiData.setText(" FROM : " + dataFrom + " | MESSAGE : " + dataMessage);
-        Log.d("通知", "成功進oncreate");
         //showNewDialog(0);
         AlertDialog.Builder alertDialogBuilder =
                 new AlertDialog.Builder(this)
@@ -63,7 +62,6 @@ public class NotificationActivity extends AppCompatActivity {
     }
     public void showNewDialog(int id) {
         // TODO : Code to show the new dialog
-        Log.d("通知", "成功進showNewDialog");
         Context context = App.getContext();
         AlertDialog.Builder builder = new AlertDialog.Builder(NotificationActivity.this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

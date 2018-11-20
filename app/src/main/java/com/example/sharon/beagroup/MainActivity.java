@@ -3,6 +3,7 @@ package com.example.sharon.beagroup;
 import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        MyApplication myApplication = (MyApplication) getApplicationContext();
 
         /**Erika 2018.10.15 Close Activity**/
         instance = this;
@@ -86,7 +88,20 @@ public class MainActivity extends AppCompatActivity {
     } //按下個人帳戶進入畫面
 
     public void findMerchandise(View view){
-        startActivity(new Intent(this, findMerchandise.class));
+        MyApplication myApplication = (MyApplication) getApplicationContext();
+        startActivity(new Intent(this, findMerchandise_furniture.class));
+        /**
+         if (myApplication.userLocation == "Furniture") {
+         //Log.d("MainActivity:findMerchandise", ""+myApplication.userLocation);
+         startActivity(new Intent(this, findMerchandise_furniture.class));
+         }else if (myApplication.userLocation == "Grocery"){
+         startActivity(new Intent(this, findMerchandise_furniture.class));
+         }else if (myApplication.userLocation == "Brunch Buffet"){
+         startActivity(new Intent(this, findMerchandise_Buffet.class));
+         }else{
+         //location is unknown ->
+         }
+         **/
     } //尋找商品
 
     public void findFriends(View view){

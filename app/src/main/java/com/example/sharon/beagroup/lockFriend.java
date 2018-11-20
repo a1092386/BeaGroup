@@ -2,6 +2,7 @@ package com.example.sharon.beagroup;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -119,13 +120,11 @@ public class lockFriend extends AppCompatActivity{
 
     public void openJSON(View view){
 
-        Log.d("測試lockFriend", "");
         getJSON("http://140.113.73.42/search.php");
     }
 
 
     public void getJSON(final String urlWebService){
-        Log.d("測試lockFriend", "到getJSON");
         MyApplication myApplication = (MyApplication) getApplicationContext();
         class  GetJSON extends AsyncTask<Void, Void, String>{
 
@@ -140,7 +139,6 @@ public class lockFriend extends AppCompatActivity{
 
             @Override
             protected void onPreExecute() {
-                Log.d("測試lockFriend", "到onPreExecute");
                 super.onPreExecute();
                 String IDText = searchID.getText().toString();
                 checkFriendID checkFID = new checkFriendID(lockFriend.this);
@@ -149,10 +147,8 @@ public class lockFriend extends AppCompatActivity{
 
             @Override
             protected void onPostExecute(String s) {
-                Log.d("測試lockFriend", "到onPostExecute");
                 super.onPostExecute(s);
                 try {
-                    Log.d("測試lockFriend", "到try");
                     loadIntoView(s);
                     //checkFID.execute(group_id, IDText);
                     Log.d("lockFriend.java","checkFID.execute()");
@@ -173,7 +169,6 @@ public class lockFriend extends AppCompatActivity{
 
                 }catch (JSONException e){
                     //e.printStackTrace();
-                    Log.d("測試lockFriend", "到catch");
                     textView.setText("ID錯誤");
                     buttonLock.setVisibility(View.INVISIBLE);
                     //Toast.makeText(getApplicationContext(), "ID錯誤", Toast.LENGTH_SHORT).show();
@@ -186,7 +181,6 @@ public class lockFriend extends AppCompatActivity{
             protected String doInBackground(Void... voids) {
 
                 try{
-                    Log.d("測試lockFriend", "到doInBackground");
                     URL url = new URL(urlWebService);           //creating a URL
                     HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();           //Opening the URL using HttpURLConnection
                     httpURLConnection.setRequestMethod("POST"); //以POST傳送
@@ -223,7 +217,6 @@ public class lockFriend extends AppCompatActivity{
 
     //將JSON的值存入array
     private void loadIntoView(String json) throws JSONException{
-        Log.d("測試lockFriend", "loadIntoView");
 
         //buttonLock.setVisibility(View.VISIBLE);
         showFollowingButton();
@@ -246,7 +239,7 @@ public class lockFriend extends AppCompatActivity{
             else if(gender.equals("M"))
                 circleImageView.setImageResource(R.drawable.boy);
         }
-        Log.d("測試lockFriend", "loadIntoView最後");
+
 
 
 
@@ -256,17 +249,19 @@ public class lockFriend extends AppCompatActivity{
     }
     public void showFollowingButton(){
         //Erika 2018.10.19 追蹤按鈕(目前無邀請功能，直接追蹤)，文字可視整合過任意修改。
-        Log.d("測試lockFriend", "到showfFollowingButton");
+
         friendCheckCode = SaveSharedPreference.getFriendCheckCode(getApplicationContext());
         if (friendCheckCode == "1"){
-            Log.d("測試lockFriend", "到if");
             buttonLock.setVisibility(View.VISIBLE);
             buttonLock.setText(R.string.following);//已追蹤
+            buttonLock.setTextColor(Color.parseColor("#7D8491"));
+            buttonLock.setBackgroundResource(R.drawable.followed_btn);
             buttonLock.setClickable(false);//希望可以做到按鈕便灰色的，比較好辨識
         }else{
-            Log.d("測試lockFriend", "到else");
             buttonLock.setVisibility(View.VISIBLE);
             buttonLock.setText(getString(R.string.follow));//開始追蹤
+            buttonLock.setTextColor(Color.parseColor("#FFFFFF"));
+            buttonLock.setBackgroundResource(R.drawable.logoutbtn_design);
             buttonLock.setClickable(true);
         }
     }
