@@ -197,6 +197,7 @@ public class BackgroundWork extends AsyncTask<String, Void, String>{ //背景執
         //Toast.makeText(context, result, Toast.LENGTH_LONG).show(); //以Toast顯示結果(登入成功/失敗、註冊成功/失敗)
         if(result.equals("Login success")) { //若登入成功則結束此context
 
+            Log.w("測試","1");
             mFirestore = FirebaseFirestore.getInstance();
             mAuth = FirebaseAuth.getInstance();
             FMS = new MyFirebaseMessagingService(context);
@@ -222,6 +223,7 @@ public class BackgroundWork extends AsyncTask<String, Void, String>{ //背景執
                             Map<String, Object> tokenMap = new HashMap<>();
                             tokenMap.put("tokenID", token);
                             tokenMap.put("uid",uid);
+                            Log.w("測試","2");
                             mFirestore.collection("Users").document(user_id).update(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {

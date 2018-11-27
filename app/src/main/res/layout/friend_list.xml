@@ -32,8 +32,8 @@
 
             <TextView
                 android:id="@+id/name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="120sp"
+                android:layout_height="45sp"
                 android:layout_alignBottom="@+id/photo_merchandise"
                 android:layout_alignStart="@+id/name_merchandise"
                 android:text="TextView"
@@ -43,8 +43,8 @@
 
             <TextView
                 android:id="@+id/id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="120sp"
+                android:layout_height="20sp"
                 android:text="TextView"
                 android:textSize="15sp" />
 

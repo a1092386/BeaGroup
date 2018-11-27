@@ -26,11 +26,14 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class findFriends extends AppCompatActivity {
 
     private ListView listView;
     private TextView textView;
+    private Timer autoUpdate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +41,34 @@ public class findFriends extends AppCompatActivity {
         setContentView(R.layout.activity_find_friends);
         listView = (ListView)findViewById(R.id.friendList);
         textView = (TextView)findViewById(R.id.empty);
+        //getJSON("http://140.113.73.42/getFriend.php");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        autoUpdate = new Timer();
+        autoUpdate.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        updatePage();
+                    }
+                });
+            }
+        }, 0, 5000); // updates each 40 secs
+    }
+
+    private void updatePage(){
         getJSON("http://140.113.73.42/getFriend.php");
+        // your logic here
+    }
+
+    @Override
+    public void onPause() {
+        autoUpdate.cancel();
+        super.onPause();
     }
 
     private void getJSON(final String urlWebService){
