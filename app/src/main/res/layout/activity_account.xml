@@ -15,57 +15,44 @@
 
         >
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:background="#55dde0"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:title="我的帳戶"
+            tools:titleTextColor="#483D3F" />
+
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/searchImage"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:layout_marginTop="92dp"
-            app:civ_border_color="#666666"
+            android:layout_marginTop="16dp"
+            app:civ_border_color="#DDDDDD"
             app:civ_border_width="0.5dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
         </de.hdodenhof.circleimageview.CircleImageView>
 
         <ListView
             android:id="@+id/account"
             android:layout_width="match_parent"
-            android:layout_height="266dp"
-            android:dividerHeight="1dp"
+            android:layout_height="237dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="300dp"
+            android:layout_marginTop="16dp"
+            android:dividerHeight="1dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/account_name">
 
         </ListView>
-
-        <TextView
-            android:id="@+id/account_title"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:text="@string/my"
-            android:textColor="#808080"
-            android:textSize="48sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/textView4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:text="@string/account"
-            android:textColor="#808080"
-            android:textSize="48sp"
-            app:layout_constraintStart_toEndOf="@+id/account_title"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/account_name"
@@ -75,7 +62,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:text="@string/textview"
-            android:textColor="#808080"
+            android:textColor="#444444"
             android:textSize="36sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -88,7 +75,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/logoutbtn_design"
             android:onClick="logout"
             android:text="@string/logout"
@@ -97,21 +84,10 @@
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.526"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/account" />
-
-        <TextView
-            android:id="@+id/token"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="136dp"
-            android:text="TextView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.225"
-            app:layout_constraintStart_toEndOf="@+id/searchImage"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/account"
+            app:layout_constraintVertical_bias="0.0" />
 
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

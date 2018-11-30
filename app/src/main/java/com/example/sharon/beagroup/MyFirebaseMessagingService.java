@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -77,7 +78,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService{
         String channelId = "Default";
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this, channelId)
-                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setSmallIcon(R.drawable.ic_stat_noti_icon2)
+                        .setColor(Color.parseColor("#55DDE0"))
                         .setContentTitle(messageTitle)
                         .setContentText(messageBody)
                         .setAutoCancel(true);

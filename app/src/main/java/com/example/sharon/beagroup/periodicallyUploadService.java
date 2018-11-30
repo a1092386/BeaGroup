@@ -1,6 +1,7 @@
 package com.example.sharon.beagroup;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -10,8 +11,10 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.estimote.coresdk.common.config.EstimoteSDK;
@@ -35,7 +38,7 @@ public class periodicallyUploadService extends Service {
     private String lastLocation="";
 
     /**NOT SUPPORT API**/
-    public static final String TAG = "periodicallyUploadService.service";
+    public static final String TAG = "periodicallyUpload";
 
     TimerTask action = new TimerTask() {
         @Override
@@ -57,12 +60,15 @@ public class periodicallyUploadService extends Service {
 
                 switch (myLocation){
                     case "Food Court"://buffet
+                        Log.w("通知","位置為Food Court");
                         showNotification("2019 生｜活","You are near Food Court", R.drawable.barbecue, findMerchandise_Buffet.class);
                         break;
                     case "Grocery"://grocery
+                        Log.w("通知","位置為Grocery");
                         showNotification("布朗尼免費教學","You are near grocery", R.drawable.fancycrave, findMerchandise_Grocery.class);
                         break;
                     case "Furniture"://furniture
+                        Log.w("通知","位置為Furniture");
                         showNotification("2019 生｜活","You are near furniture", R.drawable.toaheftiba, findMerchandise_furniture.class);
                         break;
                 }
@@ -174,7 +180,9 @@ public class periodicallyUploadService extends Service {
     }
 
     public void showNotification(String title, String message, int pictureID, Class activityClass) {
+        Log.w("通知","進入showNotification");
         Bitmap pic = BitmapFactory.decodeResource(getResources(), pictureID);
+        String channelId = "Default";
         Intent notifyIntent = new Intent(this, MainActivity.class);
         Intent advertisement = new Intent(this, activityClass);
         //findMerchandise_furniture.class 因為圖片有版權問題不放資料庫(僅限demo使用)
@@ -184,7 +192,8 @@ public class periodicallyUploadService extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivities(this, 0,
                 //new Intent[] { notifyIntent }, PendingIntent.FLAG_UPDATE_CURRENT);
                 new Intent[] { advertisement }, PendingIntent.FLAG_UPDATE_CURRENT);//打開APP尋找商品的頁面
-        Notification notification = new Notification.Builder(this)
+        Log.w("通知","Notification上");
+        /*Notification notification = new Notification.Builder(this)
                 //.setSmallIcon(android.R.drawable.ic_dialog_info)
                 //.setColor(Color.argb(1, 244, 92, 47))
                 .setColor(Color.rgb(244, 92, 47))
@@ -196,11 +205,36 @@ public class periodicallyUploadService extends Service {
                 //.addAction(android.R.drawable.ic_delete, "DISMISS", )
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)
-                .build();
-        notification.defaults |= Notification.DEFAULT_SOUND;
+                .build();*/
+        NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle();
+        bigPictureStyle.bigPicture(pic);
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this, channelId)
+                        .setColor(Color.rgb(244, 92, 47))
+                        .setSmallIcon(R.drawable.baseline_shopping_basket_black_48)
+                        .setContentTitle(title)
+                        .setContentText(message)
+                        .setStyle(bigPictureStyle)
+                        .setContentIntent(pendingIntent)
+                        .setAutoCancel(true);
+        NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
+        Log.w("通知","Notification下");
+        //notification.defaults |= Notification.DEFAULT_SOUND;
+        Log.w("通知","Manager上");
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(1, notification);
+        Log.w("通知","manager下");
+
+        int mNotificationId = (int)System.currentTimeMillis();
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(channelId, "Default channel", NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        notificationManager.notify(mNotificationId, mBuilder.build());
+        Log.w("通知","notify下");
 
 
     }

@@ -151,6 +151,8 @@ public class findFriends extends AppCompatActivity {
             Name[i] = obj.getString("name");
             ID[i] = "ID : "+obj.getString("friend_ID");
             Block[i] = obj.getString("Block");
+            if(Block[i].equals("unknown"))
+                Block[i] = "不在商場內";
         }
 
 

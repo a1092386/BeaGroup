@@ -74,7 +74,6 @@ public class account extends AppCompatActivity {
         //imageView = (ImageView)findViewById(R.id.sex_pic);
         circleImageView = (CircleImageView)findViewById(R.id.searchImage);
         textView = (TextView)findViewById(R.id.account_name);
-        tokenTest = (TextView)findViewById(R.id.token);
         //tokenTest.setText(GlobalVariable.token);
         logout = (Button)findViewById(R.id.logout_btn);
         mFirestore = FirebaseFirestore.getInstance();

@@ -12,8 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:ems="10"
-        android:inputType="textPersonName"
-        tools:text="輸入密碼" />
+        android:hint="輸入舊密碼"
+        android:inputType="textPassword" />
 
     <EditText
         android:id="@+id/alterD_pwdcon"
@@ -21,6 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:ems="10"
-        android:inputType="textPersonName"
-        tools:text="確認密碼" />
+        android:hint="輸入新密碼"
+        android:inputType="textPassword" />
+
 </LinearLayout>
