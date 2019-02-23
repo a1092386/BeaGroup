@@ -32,7 +32,7 @@
 
             <TextView
                 android:id="@+id/name"
-                android:layout_width="120sp"
+                android:layout_width="108sp"
                 android:layout_height="45sp"
                 android:layout_alignBottom="@+id/photo_merchandise"
                 android:layout_alignStart="@+id/name_merchandise"
@@ -43,7 +43,7 @@
 
             <TextView
                 android:id="@+id/id"
-                android:layout_width="120sp"
+                android:layout_width="108sp"
                 android:layout_height="20sp"
                 android:text="TextView"
                 android:textSize="15sp" />
@@ -60,7 +60,7 @@
                 android:id="@+id/block"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="6dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="TextView"

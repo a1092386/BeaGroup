@@ -180,7 +180,6 @@ public class periodicallyUploadService extends Service {
     }
 
     public void showNotification(String title, String message, int pictureID, Class activityClass) {
-        Log.w("通知","進入showNotification");
         Bitmap pic = BitmapFactory.decodeResource(getResources(), pictureID);
         String channelId = "Default";
         Intent notifyIntent = new Intent(this, MainActivity.class);
@@ -192,7 +191,6 @@ public class periodicallyUploadService extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivities(this, 0,
                 //new Intent[] { notifyIntent }, PendingIntent.FLAG_UPDATE_CURRENT);
                 new Intent[] { advertisement }, PendingIntent.FLAG_UPDATE_CURRENT);//打開APP尋找商品的頁面
-        Log.w("通知","Notification上");
         /*Notification notification = new Notification.Builder(this)
                 //.setSmallIcon(android.R.drawable.ic_dialog_info)
                 //.setColor(Color.argb(1, 244, 92, 47))
@@ -218,12 +216,9 @@ public class periodicallyUploadService extends Service {
                         .setContentIntent(pendingIntent)
                         .setAutoCancel(true);
         NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
-        Log.w("通知","Notification下");
         //notification.defaults |= Notification.DEFAULT_SOUND;
-        Log.w("通知","Manager上");
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        Log.w("通知","manager下");
 
         int mNotificationId = (int)System.currentTimeMillis();
 
@@ -234,7 +229,6 @@ public class periodicallyUploadService extends Service {
         }
 
         notificationManager.notify(mNotificationId, mBuilder.build());
-        Log.w("通知","notify下");
 
 
     }

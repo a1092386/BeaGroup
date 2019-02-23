@@ -57,7 +57,7 @@ public class findFriends extends AppCompatActivity {
                     }
                 });
             }
-        }, 0, 5000); // updates each 40 secs
+        }, 0, 2000); // updates each 40 secs
     }
 
     private void updatePage(){
@@ -152,7 +152,7 @@ public class findFriends extends AppCompatActivity {
             ID[i] = "ID : "+obj.getString("friend_ID");
             Block[i] = obj.getString("Block");
             if(Block[i].equals("unknown"))
-                Block[i] = "不在商場內";
+                Block[i] = "不在商場";
         }
 
 
